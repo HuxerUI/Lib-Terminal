@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal Preview
+Exec=example_terminal
+Icon=example_terminal
+Categories=Utility;
+Terminal=false
