@@ -1,0 +1,61 @@
+[package]
+namespace   = "huxerui"
+name        = "terminal"
+version     = "0.1.0"
+standard    = "c++23"
+license     = "MIT"
+repo        = "https://github.com/HuxerUI/Lib-Terminal"
+description = "Interactive ANSI/VT terminal emulator, view component, and local PTY/command session library for HuxerUI"
+
+[package.metadata.huxerui]
+library   = "HuxerUI::Terminal"
+resources = "resources"
+name      = "terminal"
+id        = "org.huxerui.terminal"
+namespace = "huxerui::terminal"
+# Hand-maintained modules/terminal.cppm: HuxerUI's strip_noncode() misparses the C++14 digit
+# separator in `10'000` (include/huxerui/terminal.h:65) as a char literal and omits entities after TerminalSize.
+# Drop this once HuxerUI fixes strip_noncode().
+cpp_modules_gen = false
+
+[dependencies]
+huxerui.huxerui = "0.5.5"
+compat.utf8proc = "2.10.0"
+
+[targets.huxerui_terminal]
+kind = "lib"
+
+[lib]
+path = "modules/terminal.cppm"
+
+[build]
+sources = [
+    "third_party/libvterm/src/encoding.c",
+    "third_party/libvterm/src/keyboard.c",
+    "third_party/libvterm/src/mouse.c",
+    "third_party/libvterm/src/parser.c",
+    "third_party/libvterm/src/pen.c",
+    "third_party/libvterm/src/screen.c",
+    "third_party/libvterm/src/state.c",
+    "third_party/libvterm/src/unicode.c",
+    "third_party/libvterm/src/vterm.c",
+]
+include_dirs = [
+    "include",
+    "third_party/libvterm/include",
+    "third_party/libvterm/src",
+    "src",
+]
+private_include_dirs = [
+    "third_party/libvterm/include",
+    "third_party/libvterm/src",
+    "src",
+]
+c_standard = "c11"
+
+[target.'cfg(all(os = "linux", not(env = "android")))'.runtime]
+libraries = ["util"]
+
+[target.windows.build]
+sources = ["platform/windows/src/shell.cpp"]
+defines = ["WIN32_LEAN_AND_MEAN", "NOMINMAX"]
